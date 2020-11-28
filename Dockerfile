@@ -1,4 +1,4 @@
-FROM php:8-fpm
+FROM php:7.4-fpm-buster
 
 MAINTAINER "hello hello@vvaii.com"
 
