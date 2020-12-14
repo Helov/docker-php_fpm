@@ -1,4 +1,4 @@
-FROM php:8-fpm-buster
+FROM php:7-fpm-buster
 
 MAINTAINER "Helov"
 
@@ -66,19 +66,11 @@ RUN set -eux; \
 pecl install xdebug-3.0.1; \
 docker-php-ext-enable xdebug
 
-# add imagick ext, pecl unsupported in php8
-#RUN set -eux; \
-#apt-get install -y --no-install-recommends libmagickwand-dev; \
-#pecl install imagick-3.4.4; \
-#docker-php-ext-enable imagick
-
 # add imagick ext
 RUN set -eux; \
-apt-get install -y --no-install-recommends libmagickwand-dev git; \
-git clone https://github.com/Imagick/imagick /tmp/imagick; \
-docker-php-ext-configure /tmp/imagick; \
-docker-php-ext-install -j$(nproc) /tmp/imagick; \
-rm -rf /tmp/imagick
+apt-get install -y --no-install-recommends libmagickwand-dev; \
+pecl install imagick-3.4.4; \
+docker-php-ext-enable imagick
 
 # clean apt cache
 RUN set -eux; \
