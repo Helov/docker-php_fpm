@@ -1,4 +1,4 @@
-FROM php:8-fpm-buster
+FROM php:8.0.3-fpm-buster
 
 MAINTAINER "Helov"
 
