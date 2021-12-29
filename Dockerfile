@@ -1,4 +1,4 @@
-FROM php:8.0.3-fpm-buster
+FROM php:fpm-buster
 
 MAINTAINER "Helov"
 
@@ -42,11 +42,11 @@ docker-php-ext-install -j$(nproc) gd
 RUN set -eux; \
 apt-get install -y libc-client-dev libkrb5-dev; \
 docker-php-ext-configure imap --with-kerberos --with-imap-ssl; \
-docker-php-ext-install imap
+docker-php-ext-install -j$(nproc) imap
 
 # add redis ext
 RUN set -eux; \
-pecl install redis-5.3.2; \
+pecl install redis-5.3.5; \
 docker-php-ext-enable redis
 
 # add memcached ext
@@ -63,22 +63,14 @@ docker-php-ext-enable mcrypt
 
 # add xdebug ext
 RUN set -eux; \
-pecl install xdebug-3.0.1; \
+pecl install xdebug-3.1.2; \
 docker-php-ext-enable xdebug
-
-# add imagick ext, pecl unsupported in php8
-#RUN set -eux; \
-#apt-get install -y --no-install-recommends libmagickwand-dev; \
-#pecl install imagick-3.4.4; \
-#docker-php-ext-enable imagick
 
 # add imagick ext
 RUN set -eux; \
-apt-get install -y --no-install-recommends libmagickwand-dev git; \
-git clone https://github.com/Imagick/imagick /tmp/imagick; \
-docker-php-ext-configure /tmp/imagick; \
-docker-php-ext-install -j$(nproc) /tmp/imagick; \
-rm -rf /tmp/imagick
+apt-get install -y --no-install-recommends libmagickwand-dev; \
+pecl install imagick-3.6.0; \
+docker-php-ext-enable imagick
 
 # clean apt cache
 RUN set -eux; \
