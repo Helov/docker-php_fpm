@@ -1,4 +1,4 @@
-FROM php:8.1.0-fpm-buster
+FROM php:fpm-buster
 
 MAINTAINER "Helov"
 
@@ -57,9 +57,22 @@ docker-php-ext-enable memcached
 
 # add mcrypt ext
 RUN set -eux; \
-apt-get install -y --no-install-recommends libmcrypt-dev; \
-pecl install mcrypt-1.0.4; \
-docker-php-ext-enable mcrypt
+#apt-get install -y --no-install-recommends libmcrypt-dev; \
+#pecl install mcrypt-1.0.4; \
+#docker-php-ext-enable mcrypt
+curl -fsSLOJ https://pecl.php.net/get/mcrypt/stable; \
+tar -xf mcrypt-*.tgz; \
+cd mcrypt-*; \
+phpize; \
+./configure; \
+make; \
+curl -fsSLOJ https://github.com/php/pecl-encryption-mcrypt/commit/5b16bf1c97c1bbab400fc877285bf0919ae73256.diff; \
+git apply 5b16bf1c97c1bbab400fc877285bf0919ae73256.diff; \
+make test; \
+cp modules/*.so $(pecl config-get ext_dir); \
+cd ..; \
+rm -rf mcrypt-*; \
+RUN echo extension="mcrypt.so" > /usr/local/etc/php/conf.d/php-ext-mcrypt.ini
 
 # add xdebug ext
 RUN set -eux; \
