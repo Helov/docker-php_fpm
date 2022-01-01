@@ -67,6 +67,7 @@ phpize; \
 ./configure; \
 make; \
 curl -fsSLOJ https://github.com/php/pecl-encryption-mcrypt/commit/5b16bf1c97c1bbab400fc877285bf0919ae73256.diff; \
+apt-get install -y --no-install-recommends git; \
 git apply 5b16bf1c97c1bbab400fc877285bf0919ae73256.diff; \
 make test; \
 cp modules/*.so $(pecl config-get ext_dir); \
