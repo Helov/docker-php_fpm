@@ -73,7 +73,7 @@ make test; \
 cp modules/*.so $(pecl config-get ext_dir); \
 cd ..; \
 rm -rf mcrypt-*; \
-RUN echo extension="mcrypt.so" > /usr/local/etc/php/conf.d/php-ext-mcrypt.ini
+echo extension="mcrypt.so" > /usr/local/etc/php/conf.d/php-ext-mcrypt.ini
 
 # add xdebug ext
 RUN set -eux; \
