@@ -57,7 +57,7 @@ docker-php-ext-enable memcached
 
 # add mcrypt ext
 RUN set -eux; \
-#apt-get install -y --no-install-recommends libmcrypt-dev; \
+apt-get install -y --no-install-recommends libmcrypt-dev; \
 #pecl install mcrypt-1.0.4; \
 #docker-php-ext-enable mcrypt
 curl -fsSLOJ https://pecl.php.net/get/mcrypt/stable; \
