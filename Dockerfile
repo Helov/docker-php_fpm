@@ -1,4 +1,4 @@
-FROM php:fpm-buster
+FROM php:fpm
 
 MAINTAINER "Helov"
 
@@ -13,22 +13,11 @@ MAINTAINER "Helov"
 # sysvmsg sysvsem sysvshm tidy(✗) tokenizer(✓) xml(✓) xmlreader(✓) xmlrpc(✗) xmlwriter(✓)
 # ******************
 
-# add aliyun mirror
-RUN set -eux; \
-printf 'deb http://mirrors.cloud.aliyuncs.com/debian/ buster main non-free contrib\n\
-deb http://mirrors.cloud.aliyuncs.com/debian-security buster/updates main\n\
-deb http://mirrors.cloud.aliyuncs.com/debian/ buster-updates main non-free contrib\n\
-deb http://mirrors.cloud.aliyuncs.com/debian/ buster-backports main non-free contrib\n\
-deb http://mirrors.aliyun.com/debian/ buster main non-free contrib\n\
-deb http://mirrors.aliyun.com/debian-security buster/updates main\n\
-deb http://mirrors.aliyun.com/debian/ buster-updates main non-free contrib\n\
-deb http://mirrors.aliyun.com/debian/ buster-backports main non-free contrib' >> /etc/apt/sources.list; \
-apt-get update
-
 # add base ext
 RUN set -eux; \
+apt-get update; \
 apt-get install -y --no-install-recommends libxml2-dev libzip-dev libxslt1-dev libbz2-dev libldap2-dev \
-libenchant-dev libpng-dev libgmp3-dev; \
+libenchant-2-dev libpng-dev libgmp3-dev; \
 docker-php-ext-install -j$(nproc) bcmath bz2 calendar dba enchant exif ffi zend_test gettext gmp intl \
 ldap zip mysqli opcache pcntl pdo_mysql xsl shmop soap sockets sysvmsg sysvsem sysvshm
 
@@ -46,29 +35,30 @@ docker-php-ext-install -j$(nproc) imap
 
 # add redis ext
 RUN set -eux; \
-pecl install redis-5.3.5; \
+pecl install redis; \
 docker-php-ext-enable redis
 
 # add memcached ext
 RUN set -eux; \
 apt-get install -y --no-install-recommends libmemcached-dev zlib1g-dev; \
-pecl install memcached-3.1.5; \
+pecl install memcached; \
 docker-php-ext-enable memcached
 
 # add mcrypt ext
 RUN set -eux; \
 apt-get install -y --no-install-recommends libmcrypt-dev; \
-#pecl install mcrypt-1.0.4; \
+#pecl install mcrypt; \
 #docker-php-ext-enable mcrypt
+
+# add mcrypt ext from source \
+cd /tmp; \
 curl -fsSLOJ https://pecl.php.net/get/mcrypt/stable; \
 tar -xf mcrypt-*.tgz; \
+rm -rf mcrypt-*.tgz; \
 cd mcrypt-*; \
 phpize; \
 ./configure; \
 make; \
-curl -fsSLOJ https://github.com/php/pecl-encryption-mcrypt/commit/5b16bf1c97c1bbab400fc877285bf0919ae73256.diff; \
-apt-get install -y --no-install-recommends git; \
-git apply 5b16bf1c97c1bbab400fc877285bf0919ae73256.diff; \
 make test; \
 cp modules/*.so $(pecl config-get ext_dir); \
 cd ..; \
@@ -77,13 +67,13 @@ echo extension="mcrypt.so" > /usr/local/etc/php/conf.d/php-ext-mcrypt.ini
 
 # add xdebug ext
 RUN set -eux; \
-pecl install xdebug-3.1.2; \
+pecl install xdebug; \
 docker-php-ext-enable xdebug
 
 # add imagick ext
 RUN set -eux; \
 apt-get install -y --no-install-recommends libmagickwand-dev; \
-pecl install imagick-3.6.0; \
+pecl install imagick; \
 docker-php-ext-enable imagick
 
 # clean apt cache
